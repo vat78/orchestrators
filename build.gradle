@@ -1,0 +1,11 @@
+version = '0.1.0'
+
+subprojects {
+    group = 'tech.vat78.orchestrators'
+    version = rootProject.version
+
+    repositories {
+        mavenCentral()
+    }
+
+}

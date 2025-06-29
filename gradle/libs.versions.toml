@@ -1,0 +1,8 @@
+[versions]
+spring-boot = "3.3.7"
+camunda = "8.5.7"
+
+# Tests
+junit = "5.10.1"
+testcontainers = "1.19.1"
+mockserver = "5.15.0"
