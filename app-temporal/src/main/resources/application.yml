@@ -1,0 +1,67 @@
+spring:
+  application:
+    name: "orchestrators-temporal"
+  datasource:
+    hikari:
+      maximumPoolSize: 10
+      idleTimeout: 180000
+      maxLifetime: 300000
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: "jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_DATABASE}?currentSchema=${DB_SCHEMA}"
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  temporal:
+    namespace: ${TEMPORAL_NAMESPACE}
+    connection:
+      target: ${TEMPORAL_HOST}:${TEMPORAL_PORT}
+    workers-auto-discovery:
+      packages:
+        - tech.vat78.orchestrators.temporal
+    queues:
+      eod: eod-queue
+
+server:
+  shutdown: graceful
+
+management:
+  endpoint:
+    health:
+      enabled: true
+      roles: ACTUATOR
+      show-details: ALWAYS
+      probes:
+        enabled: true
+    info:
+      enabled: true
+    loggers:
+      enabled: true
+    prometheus:
+      enabled: true
+    caches:
+      enabled: true
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - prometheus
+          - loggers
+          - caches
+  health:
+    db:
+      enabled: true
+    diskspace:
+      enabled: false
+    group:
+      readiness:
+        include: '*'
+      liveness:
+        include: '*'

@@ -15,3 +15,15 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = 'orchestrators'
+
+include 'app-temporal'
+
+include 'business-core'
+include 'business-core:interfaces'
+include 'business-core:impl'
+include 'business-core:impl:eod'
+include 'business-core:impl:day'
+include 'business-core:impl:account'
+include 'business-core:impl:agreement'
+
+include 'utils'

@@ -1,0 +1,11 @@
+subprojects {
+    apply plugin: 'java-library'
+
+    dependencies {
+        compileOnly libs.lombok
+        annotationProcessor libs.lombok
+
+        implementation project(":business-core:interfaces")
+        implementation libs.spring.jpa
+    }
+}

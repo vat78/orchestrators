@@ -1,8 +1,27 @@
 [versions]
-spring-boot = "3.3.7"
-camunda = "8.5.7"
+spring-boot = "3.4.7"
+camunda = "8.7.6"
+temporal = "1.30.0"
 
 # Tests
-junit = "5.10.1"
-testcontainers = "1.19.1"
-mockserver = "5.15.0"
+junit = "5.13.2"
+testcontainers = "1.21.2"
+
+[plugins]
+spring-plugin = { id = "org.springframework.boot", version.ref = "spring-boot" }
+
+[libraries]
+spring-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "spring-boot" }
+spring-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator", version.ref = "spring-boot" }
+spring-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "spring-boot" }
+
+lombok = { module = "org.projectlombok:lombok", version = "1.18.30" }
+
+postgresql-driver = { module = "org.postgresql:postgresql", version = "42.7.7" }
+spring-temporal = { module = "io.temporal:temporal-spring-boot-starter", version.ref = "temporal" }
+
+# Tests
+jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+testcontainers-postgres = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
+spring-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "spring-boot" }
+awaitility = { module = "org.awaitility:awaitility", version = "4.2.0" }
