@@ -25,7 +25,7 @@ camunda:
     mode: self-managed
     zeebe:
       enabled: true
-      base-url: http://localhost:13141
+      grpc-address: ${CAMUNDA_URL}
       requestTimeout: 15s
       maxMessageSize: 4194304
       execution-threads: 4
