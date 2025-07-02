@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+    alias(libs.plugins.spring.plugin)
+}
+
+dependencies {
+    implementation project(":business-core:interfaces")
+    implementation project(":business-core:impl:eod")
+    implementation project(":business-core:impl:day")
+    implementation project(":business-core:impl:account")
+    implementation project(":business-core:impl:agreement")
+    implementation project(":utils")
+
+    compileOnly libs.lombok
+    annotationProcessor libs.lombok
+
+    implementation libs.spring.web
+    implementation libs.spring.jpa
+    implementation libs.spring.actuator
+    implementation libs.spring.camunda
+    implementation libs.postgresql.driver
+
+    testImplementation libs.jupiter
+    testImplementation libs.testcontainers.postgres
+    testImplementation libs.spring.test
+    testImplementation libs.awaitility
+}
+
+test {
+    useJUnitPlatform()
+    systemProperty "junit.jupiter.extensions.autodetection.enabled", "true"
+}

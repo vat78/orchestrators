@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0fldda8" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.25.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.5.0">
+  <bpmn:process id="EOD_process_v1" name="EOD" isExecutable="true">
+    <bpmn:serviceTask id="Activity_0cj3eya" name="Start EOD">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="eodStartWorker" retries="5" />
+        <zeebe:ioMapping>
+          <zeebe:output source="=for x in 0..eodContext.threadsCount return x" target="threads" />
+          <zeebe:output source="=eodContext" target="eodContext" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1ifmojo</bpmn:incoming>
+      <bpmn:incoming>Flow_0v33hjt</bpmn:incoming>
+      <bpmn:outgoing>Flow_0he59df</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1ifmojo" sourceRef="StartEvent_1" targetRef="Activity_0cj3eya" />
+    <bpmn:serviceTask id="Activity_11i6x98" name="Pay client interest">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="clientInterestPayment" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0he59df</bpmn:incoming>
+      <bpmn:outgoing>Flow_1rcdupy</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics>
+        <bpmn:extensionElements>
+          <zeebe:loopCharacteristics inputCollection="=threads" inputElement="threadId" />
+        </bpmn:extensionElements>
+      </bpmn:multiInstanceLoopCharacteristics>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0he59df" sourceRef="Activity_0cj3eya" targetRef="Activity_11i6x98" />
+    <bpmn:serviceTask id="Activity_1350x5f" name="Claim debt interest">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="debtInterestClaim" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1rcdupy</bpmn:incoming>
+      <bpmn:outgoing>Flow_181u0bc</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics>
+        <bpmn:extensionElements>
+          <zeebe:loopCharacteristics inputCollection="=threads" inputElement="threadId" />
+        </bpmn:extensionElements>
+      </bpmn:multiInstanceLoopCharacteristics>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1rcdupy" sourceRef="Activity_11i6x98" targetRef="Activity_1350x5f" />
+    <bpmn:serviceTask id="Activity_0zka9o8" name="Handle overdue">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="overdueStep" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_181u0bc</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ir0uy7</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics>
+        <bpmn:extensionElements>
+          <zeebe:loopCharacteristics inputCollection="=threads" inputElement="threadId" />
+        </bpmn:extensionElements>
+      </bpmn:multiInstanceLoopCharacteristics>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_181u0bc" sourceRef="Activity_1350x5f" targetRef="Activity_0zka9o8" />
+    <bpmn:serviceTask id="Activity_15kjie7" name="Switch day">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="switchOpenDay" retries="5" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1ir0uy7</bpmn:incoming>
+      <bpmn:outgoing>Flow_0angkg2</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_1x9rpj9" name="Calculate client interest">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="clientInterestCalculation" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0angkg2</bpmn:incoming>
+      <bpmn:outgoing>Flow_0vld2gi</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics>
+        <bpmn:extensionElements>
+          <zeebe:loopCharacteristics inputCollection="=threads" inputElement="threadId" />
+        </bpmn:extensionElements>
+      </bpmn:multiInstanceLoopCharacteristics>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_0nh0rfc" name="Calculate debt interest">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="debtInterestCalculation" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0vld2gi</bpmn:incoming>
+      <bpmn:outgoing>Flow_0zxys2q</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics>
+        <bpmn:extensionElements>
+          <zeebe:loopCharacteristics inputCollection="=threads" inputElement="threadId" />
+        </bpmn:extensionElements>
+      </bpmn:multiInstanceLoopCharacteristics>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1ir0uy7" sourceRef="Activity_0zka9o8" targetRef="Activity_15kjie7" />
+    <bpmn:sequenceFlow id="Flow_0angkg2" sourceRef="Activity_15kjie7" targetRef="Activity_1x9rpj9" />
+    <bpmn:sequenceFlow id="Flow_0vld2gi" sourceRef="Activity_1x9rpj9" targetRef="Activity_0nh0rfc" />
+    <bpmn:endEvent id="Event_169w10y">
+      <bpmn:incoming>Flow_0zxys2q</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0zxys2q" sourceRef="Activity_0nh0rfc" targetRef="Event_169w10y" />
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_1ifmojo</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_07c2rxn">
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">0 0 0 * * *</bpmn:timeCycle>
+      </bpmn:timerEventDefinition>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0v33hjt" sourceRef="Event_1us89k7" targetRef="Activity_0cj3eya" />
+    <bpmn:startEvent id="Event_1us89k7">
+      <bpmn:outgoing>Flow_0v33hjt</bpmn:outgoing>
+      <bpmn:signalEventDefinition id="SignalEventDefinition_02xdlam" signalRef="Signal_1af4hs4" />
+    </bpmn:startEvent>
+  </bpmn:process>
+  <bpmn:signal id="Signal_1af4hs4" name="test_eod_start_signal" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="EOD_process_v1">
+      <bpmndi:BPMNShape id="Activity_0bk2iqe_di" bpmnElement="Activity_0cj3eya">
+        <dc:Bounds x="260" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1krr3ur_di" bpmnElement="Activity_11i6x98">
+        <dc:Bounds x="390" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0y0fbij" bpmnElement="Activity_1350x5f">
+        <dc:Bounds x="520" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1w0p55n" bpmnElement="Activity_0zka9o8">
+        <dc:Bounds x="650" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0amdni3" bpmnElement="Activity_15kjie7">
+        <dc:Bounds x="780" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_10p6auu" bpmnElement="Activity_1x9rpj9">
+        <dc:Bounds x="910" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1liztx1" bpmnElement="Activity_0nh0rfc">
+        <dc:Bounds x="1050" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_169w10y_di" bpmnElement="Event_169w10y">
+        <dc:Bounds x="1182" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0l5wonq_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_10f0s6v_di" bpmnElement="Event_1us89k7">
+        <dc:Bounds x="179" y="172" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1ifmojo_di" bpmnElement="Flow_1ifmojo">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="260" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0he59df_di" bpmnElement="Flow_0he59df">
+        <di:waypoint x="360" y="117" />
+        <di:waypoint x="390" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1rcdupy_di" bpmnElement="Flow_1rcdupy">
+        <di:waypoint x="490" y="117" />
+        <di:waypoint x="520" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_181u0bc_di" bpmnElement="Flow_181u0bc">
+        <di:waypoint x="620" y="117" />
+        <di:waypoint x="650" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ir0uy7_di" bpmnElement="Flow_1ir0uy7">
+        <di:waypoint x="750" y="117" />
+        <di:waypoint x="780" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0angkg2_di" bpmnElement="Flow_0angkg2">
+        <di:waypoint x="880" y="117" />
+        <di:waypoint x="910" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vld2gi_di" bpmnElement="Flow_0vld2gi">
+        <di:waypoint x="1010" y="117" />
+        <di:waypoint x="1050" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0zxys2q_di" bpmnElement="Flow_0zxys2q">
+        <di:waypoint x="1150" y="117" />
+        <di:waypoint x="1182" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0v33hjt_di" bpmnElement="Flow_0v33hjt">
+        <di:waypoint x="215" y="190" />
+        <di:waypoint x="238" y="190" />
+        <di:waypoint x="238" y="117" />
+        <di:waypoint x="260" y="117" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

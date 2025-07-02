@@ -19,6 +19,7 @@ lombok = { module = "org.projectlombok:lombok", version = "1.18.30" }
 
 postgresql-driver = { module = "org.postgresql:postgresql", version = "42.7.7" }
 spring-temporal = { module = "io.temporal:temporal-spring-boot-starter", version.ref = "temporal" }
+spring-camunda = { module = "io.camunda:spring-boot-starter-camunda-sdk", version.ref = "camunda" }
 
 # Tests
 jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }

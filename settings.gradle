@@ -17,6 +17,7 @@ dependencyResolutionManagement {
 rootProject.name = 'orchestrators'
 
 include 'app-temporal'
+include 'app-camunda8'
 
 include 'business-core'
 include 'business-core:interfaces'
